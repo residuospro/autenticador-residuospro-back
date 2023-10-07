@@ -7,7 +7,7 @@ export interface UserPayload extends JwtPayload {
   userId: string;
   email: string;
   username: string;
-  company: string;
+  idCompany: string;
   idDepartment: string;
   department: string;
   ramal: number;

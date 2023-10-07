@@ -10,6 +10,8 @@ var Routes;
     Routes["CHANGE_PASSWORD"] = "/api/change_password/:id";
     Routes["CREATE_PASSWORD"] = "/api/create_password/:id";
     Routes["DELETE_USER"] = "/user/:id";
+    Routes["UPDATE_USER_AFTER_DEPARTMENT"] = "/api/update/user_by_department";
+    Routes["DELETE_USER_AFTER_DEPARTMENT"] = "/api/delete/user_by_department/:id";
     Routes["GET_USERS"] = "/users";
     Routes["GET_USER_BY_USERNAME"] = "/user/by-username";
     Routes["GET_ALL_USERNAMES"] = "/user/all";

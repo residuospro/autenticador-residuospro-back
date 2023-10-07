@@ -34,7 +34,7 @@ class UserController {
                     password,
                     email,
                     service,
-                }, user.permission[0]);
+                }, user.role[0]);
                 return res.status(201).json(createUser);
             }
             catch (error) {
@@ -144,6 +144,15 @@ class UserController {
             }
         });
     }
+    updateUserAfterUpdateDepartment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { name, ramal, idDepartment } = req.body;
+            yield user_service_1.default.updateUserAfterUpdateDepartmentService(name, ramal, idDepartment);
+            return res
+                .status(204)
+                .json("Todos os usuários desse departamento foram atualizados");
+        });
+    }
     deleteUsers(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -154,6 +163,13 @@ class UserController {
             catch (error) {
                 return res.status(404).send({ message: error.message });
             }
+        });
+    }
+    deleteUserAfterDepartment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            yield user_service_1.default.deleteUserAfterDepartmentService(id);
+            return res.status(204).json("Todos os usuário foram deletados");
         });
     }
 }

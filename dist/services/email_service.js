@@ -34,10 +34,10 @@ class EmailService {
                 html: (0, emailMsg_1.message)(userId, service, typeAction),
             })
                 .then((res) => {
-                return res;
+                console.log("email enviado com sucesso", res);
             })
                 .catch((error) => {
-                return error;
+                console.log("falha ao enviar o email", error);
             });
         });
     }

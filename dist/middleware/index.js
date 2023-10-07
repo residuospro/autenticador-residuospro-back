@@ -50,7 +50,7 @@ exports.verifyToken = verifyToken;
 const verifyPermission = (permission) => {
     return (req, res, next) => {
         const user = req.user;
-        if (permission.includes(user.permission[0])) {
+        if (permission.includes(user.role[0])) {
             next();
         }
         else {

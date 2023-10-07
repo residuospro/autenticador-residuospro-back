@@ -22,15 +22,7 @@ class UserService {
     static createUser(userData, permission) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { idCompany, service, email, username } = userData;
-                const existingUser = yield users_1.default.findOne({
-                    username,
-                    idCompany,
-                    deleted: false,
-                });
-                if (existingUser != null) {
-                    throw new handleError_1.default("Nome de usuário já existe", 409);
-                }
+                const { service, email } = userData;
                 const saltRounds = 8;
                 const hashedPassword = yield bcrypt_1.default.hash(userData.password, saltRounds);
                 userData.password = hashedPassword;
@@ -198,17 +190,22 @@ class UserService {
             }
         });
     }
-    static updateUserAfterUpdateDepartment(name, ramal, id) {
+    static updateUserAfterUpdateDepartmentService(name, ramal, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (name) {
-                const user = yield users_1.default.updateMany({ idDepartment: id }, {
-                    department: name,
-                });
+            try {
+                if (name) {
+                    yield users_1.default.updateMany({ idDepartment: id }, {
+                        department: name,
+                    });
+                }
+                if (ramal) {
+                    yield users_1.default.updateMany({ idDepartment: id }, {
+                        ramal,
+                    });
+                }
             }
-            if (ramal) {
-                const user = yield users_1.default.updateMany({ idDepartment: id }, {
-                    ramal,
-                });
+            catch (error) {
+                return error;
             }
         });
     }
@@ -224,6 +221,16 @@ class UserService {
             }
             catch (error) {
                 throw new Error("Usuário não encontrado");
+            }
+        });
+    }
+    static deleteUserAfterDepartmentService(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield users_1.default.updateMany({ idDepartment: id }, { deleted: true, deletedAt: new Date() });
+            }
+            catch (error) {
+                return error;
             }
         });
     }

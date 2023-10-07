@@ -9,17 +9,7 @@ import EmailService from "./email_service";
 class UserService {
   static async createUser(userData: UserDataService, permission: string) {
     try {
-      const { idCompany, service, email, username } = userData;
-
-      const existingUser = await User.findOne({
-        username,
-        idCompany,
-        deleted: false,
-      });
-
-      if (existingUser != null) {
-        throw new HandleError("Nome de usuário já existe", 409);
-      }
+      const { service, email } = userData;
 
       const saltRounds = 8;
       const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
@@ -239,27 +229,31 @@ class UserService {
     }
   }
 
-  static async updateUserAfterUpdateDepartment(
+  static async updateUserAfterUpdateDepartmentService(
     name: string,
     ramal: number,
     id: string
   ) {
-    if (name) {
-      const user = await User.updateMany(
-        { idDepartment: id },
-        {
-          department: name,
-        }
-      );
-    }
+    try {
+      if (name) {
+        await User.updateMany(
+          { idDepartment: id },
+          {
+            department: name,
+          }
+        );
+      }
 
-    if (ramal) {
-      const user = await User.updateMany(
-        { idDepartment: id },
-        {
-          ramal,
-        }
-      );
+      if (ramal) {
+        await User.updateMany(
+          { idDepartment: id },
+          {
+            ramal,
+          }
+        );
+      }
+    } catch (error) {
+      return error;
     }
   }
 
@@ -279,6 +273,17 @@ class UserService {
       return user;
     } catch (error: any) {
       throw new Error("Usuário não encontrado");
+    }
+  }
+
+  static async deleteUserAfterDepartmentService(id: string) {
+    try {
+      await User.updateMany(
+        { idDepartment: id },
+        { deleted: true, deletedAt: new Date() }
+      );
+    } catch (error) {
+      return error;
     }
   }
 }

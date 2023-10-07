@@ -3,6 +3,7 @@ import { ITokenResponse, IUserSchema } from "../utils/interfaces";
 import HandleError from "../utils/errors/handleError";
 import TokenService from "../services/token_service";
 import User from "../models/users";
+import { Permissions } from "../utils/enum";
 
 abstract class IAuthService {
   abstract findUserByUsername(username: string): Promise<IUserSchema | null>;
@@ -39,12 +40,30 @@ class AuthService implements IAuthService {
 
   async generateTokens(user: IUserSchema): Promise<ITokenResponse> {
     try {
-      const token = TokenService.generateAcessToken(
-        user.role,
-        user.name,
-        user._id,
-        user.email
-      );
+      let config: Partial<IUserSchema> = {
+        role: user.role,
+        name: user.name,
+        id: user.id,
+        email: user.email,
+        username: user.username,
+      };
+
+      if (user.role[0] == Permissions.ADMIN) {
+        config = { ...config, idCompany: user.idCompany };
+      } else if (
+        user.role[0] == Permissions.MANAGER ||
+        user.role[0] == Permissions.COLLABORATOR
+      ) {
+        config = {
+          ...config,
+          idCompany: user.idCompany,
+          idDepartment: user.idDepartment,
+          department: user.department,
+          ramal: user.ramal,
+        };
+      }
+
+      const token = TokenService.generateAcessToken(config);
 
       const refreshToken = await TokenService.generateRefreshToken(user.id);
 

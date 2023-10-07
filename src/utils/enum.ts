@@ -6,6 +6,8 @@ export enum Routes {
   CHANGE_PASSWORD = "/api/change_password/:id",
   CREATE_PASSWORD = "/api/create_password/:id",
   DELETE_USER = "/user/:id",
+  UPDATE_USER_AFTER_DEPARTMENT = "/api/update/user_by_department",
+  DELETE_USER_AFTER_DEPARTMENT = "/api/delete/user_by_department/:id",
 
   GET_USERS = "/users",
   GET_USER_BY_USERNAME = "/user/by-username",

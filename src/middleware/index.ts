@@ -66,7 +66,7 @@ export const verifyPermission = (permission: string[]): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = req.user as UserPayload;
 
-    if (permission.includes(user.permission[0])) {
+    if (permission.includes(user.role[0])) {
       next();
     } else {
       return res.status(401).send({

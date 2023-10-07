@@ -37,7 +37,7 @@ class UserController {
           email,
           service,
         },
-        user.permission[0]
+        user.role[0]
       );
 
       return res.status(201).json(createUser);
@@ -136,7 +136,10 @@ class UserController {
 
       const { id } = req.params;
 
-      await UserService.finalizeRegistrationService([{ username, password }], id);
+      await UserService.finalizeRegistrationService(
+        [{ username, password }],
+        id
+      );
 
       if (service == Service.RESIDUOSPRO) {
         let url = process.env.RESIDUOS_SERVICE;
@@ -183,6 +186,20 @@ class UserController {
     }
   }
 
+  async updateUserAfterUpdateDepartment(req: Request, res: Response) {
+    const { name, ramal, idDepartment } = req.body;
+
+    await UserService.updateUserAfterUpdateDepartmentService(
+      name,
+      ramal,
+      idDepartment
+    );
+
+    return res
+      .status(204)
+      .json("Todos os usuários desse departamento foram atualizados");
+  }
+
   async deleteUsers(req: Request, res: Response) {
     try {
       const { id } = req.params;
@@ -193,6 +210,14 @@ class UserController {
     } catch (error: any) {
       return res.status(404).send({ message: error.message });
     }
+  }
+
+  async deleteUserAfterDepartment(req: Request, res: Response) {
+    const { id } = req.params;
+
+    await UserService.deleteUserAfterDepartmentService(id);
+
+    return res.status(204).json("Todos os usuário foram deletados");
   }
 }
 

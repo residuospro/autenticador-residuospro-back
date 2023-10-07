@@ -36,13 +36,7 @@ class TokenService {
             }
         });
     }
-    static generateAcessToken(permission, name, userId, email) {
-        let config = {
-            permission,
-            name,
-            userId,
-            email,
-        };
+    static generateAcessToken(config) {
         const token = jsonwebtoken_1.default.sign(config, JWT_SECRET, { expiresIn: "5h" });
         return token;
     }
@@ -58,7 +52,7 @@ class TokenService {
             });
             const user = yield users_1.default.findById(userInfo.userId);
             if (refresh_token) {
-                const token = this.generateAcessToken(user.role, user.name, userInfo.userId, user.email);
+                const token = this.generateAcessToken(user);
                 const refreshToken = yield this.generateRefreshToken(user.id);
                 return { token, refreshToken };
             }
@@ -67,14 +61,14 @@ class TokenService {
     }
     static decodedTokenService(jwtToken) {
         const decodedToken = jsonwebtoken_1.default.decode(jwtToken);
-        if (decodedToken && decodedToken.exp) {
-            const { name, username, permission, company, userId, idDepartment, department, ramal, email, } = decodedToken;
+        if (decodedToken) {
+            const { name, username, role, idCompany, id, idDepartment, department, ramal, email, } = decodedToken;
             return {
                 name,
                 username,
-                permission,
-                company,
-                userId,
+                permission: role,
+                idCompany,
+                userId: id,
                 idDepartment,
                 department,
                 ramal,

@@ -34,6 +34,11 @@ user_route
 ]), user_controller.createUser)
     .post(enum_1.Routes.SAVE_SUPPORT, user_controller.createUser)
     .post(enum_1.Routes.USER_EXISTS, user_controller.validateUsername)
+    .post(enum_1.Routes.UPDATE_USER_AFTER_DEPARTMENT, middleware_1.verifyToken, (0, middleware_1.verifyPermission)([
+    enum_2.Permissions.SUPPORT,
+    enum_2.Permissions.ADMIN,
+    enum_2.Permissions.MANAGER,
+]), user_controller.updateUserAfterUpdateDepartment)
     .put(enum_1.Routes.CREATE_PASSWORD, user_controller.finalizeRegistration)
     .put(enum_1.Routes.UPDATE_USER, middleware_1.verifyToken, (0, middleware_1.verifyPermission)([
     enum_2.Permissions.SUPPORT,
@@ -44,6 +49,11 @@ user_route
     enum_2.Permissions.SUPPORT,
     enum_2.Permissions.ADMIN,
     enum_2.Permissions.MANAGER,
-]), user_controller.deleteUsers);
+]), user_controller.deleteUsers)
+    .delete(enum_1.Routes.DELETE_USER_AFTER_DEPARTMENT, middleware_1.verifyToken, (0, middleware_1.verifyPermission)([
+    enum_2.Permissions.SUPPORT,
+    enum_2.Permissions.ADMIN,
+    enum_2.Permissions.MANAGER,
+]), user_controller.deleteUserAfterDepartment);
 exports.default = user_route;
 //# sourceMappingURL=users_route.js.map

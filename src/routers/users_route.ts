@@ -61,6 +61,16 @@ user_route
   )
   .post(Routes.SAVE_SUPPORT, user_controller.createUser)
   .post(Routes.USER_EXISTS, user_controller.validateUsername)
+  .post(
+    Routes.UPDATE_USER_AFTER_DEPARTMENT,
+    verifyToken,
+    verifyPermission([
+      Permissions.SUPPORT,
+      Permissions.ADMIN,
+      Permissions.MANAGER,
+    ]),
+    user_controller.updateUserAfterUpdateDepartment
+  )
   .put(Routes.CREATE_PASSWORD, user_controller.finalizeRegistration)
   .put(
     Routes.UPDATE_USER,
@@ -81,6 +91,16 @@ user_route
       Permissions.MANAGER,
     ]),
     user_controller.deleteUsers
+  )
+  .delete(
+    Routes.DELETE_USER_AFTER_DEPARTMENT,
+    verifyToken,
+    verifyPermission([
+      Permissions.SUPPORT,
+      Permissions.ADMIN,
+      Permissions.MANAGER,
+    ]),
+    user_controller.deleteUserAfterDepartment
   );
 
 export default user_route;

@@ -18,20 +18,10 @@ class PayloadController {
         return __awaiter(this, void 0, void 0, function* () {
             const token = req.token;
             const user = yield token_service_1.default.decodedTokenService(token);
-            let data = {
-                name: user === null || user === void 0 ? void 0 : user.name,
-                username: user === null || user === void 0 ? void 0 : user.username,
-                permission: user === null || user === void 0 ? void 0 : user.permission,
-                company: user.company,
-                userId: user.userId,
-            };
-            if (user === null || user === void 0 ? void 0 : user.idDepartment) {
-                data = Object.assign(Object.assign({}, data), { idDepartment: user.idDepartment, department: user.department, ramal: user.ramal });
-            }
             if (!user) {
                 res.status(401).send({ message: "Token inválido" });
             }
-            return res.status(200).json(data);
+            return res.status(200).json(user);
         });
     }
 }

@@ -16,6 +16,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const handleError_1 = __importDefault(require("../utils/errors/handleError"));
 const token_service_1 = __importDefault(require("../services/token_service"));
 const users_1 = __importDefault(require("../models/users"));
+const enum_1 = require("../utils/enum");
 class IAuthService {
 }
 class AuthService {
@@ -41,7 +42,21 @@ class AuthService {
     generateTokens(user) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const token = token_service_1.default.generateAcessToken(user.role, user.name, user._id, user.email);
+                let config = {
+                    role: user.role,
+                    name: user.name,
+                    id: user.id,
+                    email: user.email,
+                    username: user.username,
+                };
+                if (user.role[0] == enum_1.Permissions.ADMIN) {
+                    config = Object.assign(Object.assign({}, config), { idCompany: user.idCompany });
+                }
+                else if (user.role[0] == enum_1.Permissions.MANAGER ||
+                    user.role[0] == enum_1.Permissions.COLLABORATOR) {
+                    config = Object.assign(Object.assign({}, config), { idCompany: user.idCompany, idDepartment: user.idDepartment, department: user.department, ramal: user.ramal });
+                }
+                const token = token_service_1.default.generateAcessToken(config);
                 const refreshToken = yield token_service_1.default.generateRefreshToken(user.id);
                 return { token, refreshToken };
             }

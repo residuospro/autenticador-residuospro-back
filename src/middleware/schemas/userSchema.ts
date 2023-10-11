@@ -13,12 +13,6 @@ export const userCreateSchema = checkSchema({
     notEmpty: true,
     errorMessage: "Email não fornecido",
   },
-  role: {
-    in: ["body"],
-    isArray: true,
-    notEmpty: true,
-    errorMessage: "Role não fornecida",
-  },
 });
 
 export const getUserByRoleSchema = checkSchema({

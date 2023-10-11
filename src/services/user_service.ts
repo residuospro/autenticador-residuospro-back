@@ -5,10 +5,14 @@ import { Actions, Permissions } from "../utils/enum";
 import HandleError from "../utils/errors/handleError";
 import PermissionMapper from "../utils/errors/mapPermission";
 import EmailService from "./email_service";
+import mongoose from "mongoose";
 
 class UserService {
   static async createUser(userData: UserDataService, permission: string) {
     try {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
       const { service, email } = userData;
 
       const saltRounds = 8;
@@ -22,7 +26,7 @@ class UserService {
         ...userData,
       });
 
-      const savedUser = await newUser.save();
+      const savedUser = await newUser.save({ session });
 
       if (savedUser) {
         await EmailService.sendEmail(
@@ -32,6 +36,9 @@ class UserService {
           Actions.CREATE
         );
       }
+
+      await session.commitTransaction();
+      session.endSession();
 
       return savedUser;
     } catch (error: any) {

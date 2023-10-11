@@ -25,7 +25,7 @@ const userSchema = new mongoose_1.default.Schema({
     role: [
         {
             type: String,
-            required: true,
+            required: false,
         },
     ],
     email: {

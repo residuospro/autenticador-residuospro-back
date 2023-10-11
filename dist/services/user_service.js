@@ -18,20 +18,25 @@ const enum_1 = require("../utils/enum");
 const handleError_1 = __importDefault(require("../utils/errors/handleError"));
 const mapPermission_1 = __importDefault(require("../utils/errors/mapPermission"));
 const email_service_1 = __importDefault(require("./email_service"));
+const mongoose_1 = __importDefault(require("mongoose"));
 class UserService {
     static createUser(userData, permission) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const session = yield mongoose_1.default.startSession();
+                session.startTransaction();
                 const { service, email } = userData;
                 const saltRounds = 8;
                 const hashedPassword = yield bcrypt_1.default.hash(userData.password, saltRounds);
                 userData.password = hashedPassword;
                 userData.role = mapPermission_1.default.getCreatablePermission(permission);
                 const newUser = new users_1.default(Object.assign({}, userData));
-                const savedUser = yield newUser.save();
+                const savedUser = yield newUser.save({ session });
                 if (savedUser) {
                     yield email_service_1.default.sendEmail(email, service, savedUser.id, enum_1.Actions.CREATE);
                 }
+                yield session.commitTransaction();
+                session.endSession();
                 return savedUser;
             }
             catch (error) {

@@ -15,12 +15,6 @@ exports.userCreateSchema = (0, express_validator_1.checkSchema)({
         notEmpty: true,
         errorMessage: "Email não fornecido",
     },
-    role: {
-        in: ["body"],
-        isArray: true,
-        notEmpty: true,
-        errorMessage: "Role não fornecida",
-    },
 });
 exports.getUserByRoleSchema = (0, express_validator_1.checkSchema)({
     page: {

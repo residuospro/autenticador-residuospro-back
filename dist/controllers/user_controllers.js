@@ -55,9 +55,19 @@ class UserController {
             }
             catch (error) {
                 if (error instanceof handleError_1.default) {
-                    return res.status(error.statusCode).send({ message: error.message });
+                    return res.status(error.statusCode).send({
+                        message: {
+                            title: enum_1.Messages.TITLE_THERE_ARE_NO_RECORDS,
+                            subTitle: enum_1.Messages.SUBTITLE_THERE_ARE_NO_RECORDS,
+                        },
+                    });
                 }
-                return res.status(500).send({ message: error.message });
+                return res.status(500).send({
+                    message: {
+                        title: enum_1.Messages.TITLE_ERROR,
+                        subTitle: enum_1.Messages.SUBTITLE_ERROR,
+                    },
+                });
             }
         });
     }
@@ -88,7 +98,12 @@ class UserController {
                 return res.status(404).send({ message: "Usuário não encontrado" });
             }
             catch (error) {
-                return res.status(500).send({ message: error.message });
+                return res.status(500).send({
+                    message: {
+                        title: enum_1.Messages.TITLE_ERROR,
+                        subTitle: enum_1.Messages.SUBTITLE_ERROR,
+                    },
+                });
             }
         });
     }

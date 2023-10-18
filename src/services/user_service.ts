@@ -121,12 +121,19 @@ class UserService {
     try {
       const { username, idCompany, role } = users;
 
+      const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(username);
+
       let query: any = {
-        username,
         idCompany,
         role: { $in: [role] },
         deleted: false,
       };
+
+      if (regex) {
+        query = { ...query, email: username };
+      } else {
+        query = { ...query, username };
+      }
 
       const user = await User.findOne(query);
 

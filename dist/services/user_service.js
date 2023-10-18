@@ -100,12 +100,18 @@ class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { username, idCompany, role } = users;
+                const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(username);
                 let query = {
-                    username,
                     idCompany,
                     role: { $in: [role] },
                     deleted: false,
                 };
+                if (regex) {
+                    query = Object.assign(Object.assign({}, query), { email: username });
+                }
+                else {
+                    query = Object.assign(Object.assign({}, query), { username });
+                }
                 const user = yield users_1.default.findOne(query);
                 return user;
             }

@@ -3,7 +3,7 @@ import UserService from "../services/user_service";
 import { IUser } from "../utils/interfaces";
 import HandleError from "../utils/errors/handleError";
 import PasswordGenerator from "../utils/passwordGenerator";
-import { Service } from "../utils/enum";
+import { Messages, Service } from "../utils/enum";
 
 class UserController {
   async createUser(req: Request, res: Response) {
@@ -66,10 +66,20 @@ class UserController {
       return res.status(200).json(users);
     } catch (error: any) {
       if (error instanceof HandleError) {
-        return res.status(error.statusCode).send({ message: error.message });
+        return res.status(error.statusCode).send({
+          message: {
+            title: Messages.TITLE_THERE_ARE_NO_RECORDS,
+            subTitle: Messages.SUBTITLE_THERE_ARE_NO_RECORDS,
+          },
+        });
       }
 
-      return res.status(500).send({ message: error.message });
+      return res.status(500).send({
+        message: {
+          title: Messages.TITLE_ERROR,
+          subTitle: Messages.SUBTITLE_ERROR,
+        },
+      });
     }
   }
 
@@ -105,7 +115,12 @@ class UserController {
 
       return res.status(404).send({ message: "Usuário não encontrado" });
     } catch (error: any) {
-      return res.status(500).send({ message: error.message });
+      return res.status(500).send({
+        message: {
+          title: Messages.TITLE_ERROR,
+          subTitle: Messages.SUBTITLE_ERROR,
+        },
+      });
     }
   }
 

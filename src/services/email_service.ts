@@ -9,12 +9,12 @@ class EmailService {
     typeAction: string
   ): Promise<void> {
     const transportConfig = nodemailer.createTransport({
-      host: "smtp-mail.outlook.com",
-      port: 587,
-      secure: false,
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.USER_EMAIL,
-        pass: `${process.env.USER_PASS}#`,
+        pass: process.env.USER_PASS,
       },
     });
 
@@ -26,10 +26,10 @@ class EmailService {
         html: message(userId, service, typeAction),
       })
       .then((res) => {
-        console.log("email enviado com sucesso", res);
+        return res;
       })
       .catch((error) => {
-        console.log("falha ao enviar o email", error);
+        throw error;
       });
   }
 }

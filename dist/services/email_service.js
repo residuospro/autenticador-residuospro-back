@@ -18,12 +18,12 @@ class EmailService {
     static sendEmail(recipient, service, userId, typeAction) {
         return __awaiter(this, void 0, void 0, function* () {
             const transportConfig = nodemailer_1.default.createTransport({
-                host: "smtp-mail.outlook.com",
-                port: 587,
-                secure: false,
+                host: "smtp.gmail.com",
+                port: 465,
+                secure: true,
                 auth: {
                     user: process.env.USER_EMAIL,
-                    pass: `${process.env.USER_PASS}#`,
+                    pass: process.env.USER_PASS,
                 },
             });
             yield transportConfig
@@ -34,10 +34,10 @@ class EmailService {
                 html: (0, emailMsg_1.message)(userId, service, typeAction),
             })
                 .then((res) => {
-                console.log("email enviado com sucesso", res);
+                return res;
             })
                 .catch((error) => {
-                console.log("falha ao enviar o email", error);
+                throw error;
             });
         });
     }

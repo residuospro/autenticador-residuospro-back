@@ -112,7 +112,7 @@ class UserService {
                 else {
                     query = Object.assign(Object.assign({}, query), { username });
                 }
-                const user = yield users_1.default.findOne(query);
+                const user = yield users_1.default.find(query);
                 return user;
             }
             catch (error) {

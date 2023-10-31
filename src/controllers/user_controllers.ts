@@ -40,13 +40,29 @@ class UserController {
         user.role[0]
       );
 
-      return res.status(201).json(createUser);
+      return res.status(201).json({
+        createUser,
+        message: {
+          title: Messages.TITLE_REGISTER,
+          subTitle: Messages.SUBTITLE_REGISTER,
+        },
+      });
     } catch (error: any) {
       if (error instanceof HandleError) {
-        return res.status(error.statusCode).send({ message: error.message });
+        return res.status(error.statusCode).send({
+          message: {
+            title: Messages.TITLE_EXISTING_USER,
+            subTitle: Messages.SUBTITLE_EXISTING_USER,
+          },
+        });
       }
 
-      return res.status(500).send({ message: error.message });
+      return res.status(500).send({
+        message: {
+          title: Messages.TITLE_ERROR,
+          subTitle: Messages.SUBTITLE_ERROR,
+        },
+      });
     }
   }
 
@@ -95,7 +111,12 @@ class UserController {
 
       return res.status(200).json(users);
     } catch (error) {
-      return res.status(500).send({ message: error.message });
+      return res.status(500).send({
+        message: {
+          title: Messages.TITLE_ERROR,
+          subTitle: Messages.SUBTITLE_ERROR,
+        },
+      });
     }
   }
 
@@ -191,13 +212,29 @@ class UserController {
         id
       );
 
-      return res.status(200).json(user);
+      return res.status(200).json({
+        user,
+        message: {
+          title: Messages.TITLE_UPDATE_REGISTER,
+          subTitle: Messages.SUBTITLE_UPDATE_REGISTER,
+        },
+      });
     } catch (error: any) {
       if (error instanceof HandleError) {
-        return res.status(error.statusCode).send({ message: error.message });
+        return res.status(error.statusCode).send({
+          message: {
+            title: Messages.TITLE_EXISTING_USER,
+            subTitle: Messages.SUBTITLE_EXISTING_USER,
+          },
+        });
       }
 
-      return res.status(404).send({ message: error.message });
+      return res.status(404).send({
+        message: {
+          title: Messages.TITLE_ERROR_UPDATE_REGISTER,
+          subTitle: Messages.SUBTITLE_ERROR_UPDATE_REGISTER,
+        },
+      });
     }
   }
 
@@ -221,9 +258,19 @@ class UserController {
 
       const user = await UserService.deleteUser(id);
 
-      return res.status(200).json(user);
+      return res.status(200).json({
+        message: {
+          title: Messages.TITLE_DELETE_REGISTER,
+          subTitle: Messages.SUBTITLE_DELETE_REGISTER,
+        },
+      });
     } catch (error: any) {
-      return res.status(404).send({ message: error.message });
+      return res.status(404).send({
+        message: {
+          title: Messages.TITLE_ERROR_DELETE_REGISTER,
+          subTitle: Messages.SUBTITLE_ERROR_DELETE_REGISTER,
+        },
+      });
     }
   }
 

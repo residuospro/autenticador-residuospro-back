@@ -135,7 +135,7 @@ class UserService {
         query = { ...query, username };
       }
 
-      const user = await User.findOne(query);
+      const user = await User.find(query);
 
       return user;
     } catch (error: any) {

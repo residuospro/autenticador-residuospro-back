@@ -24,7 +24,7 @@ class UserController {
                 const user = req.user;
                 const generator = new passwordGenerator_1.default();
                 const password = generator.generateRandomPassword();
-                const createUser = yield user_service_1.default.createUser({
+                const { savedUser, totalPages } = yield user_service_1.default.createUser({
                     name,
                     idDepartment,
                     department,
@@ -36,7 +36,8 @@ class UserController {
                     service,
                 }, user.role[0]);
                 return res.status(201).json({
-                    createUser,
+                    savedUser,
+                    totalPages,
                     message: {
                         title: enum_1.Messages.TITLE_REGISTER,
                         subTitle: enum_1.Messages.SUBTITLE_REGISTER,
@@ -66,7 +67,7 @@ class UserController {
             try {
                 const { page, itemsPerPage, role, idCompany, idDepartment } = req.body;
                 const skip = (parseInt(page) - 1) * parseInt(itemsPerPage);
-                const users = yield user_service_1.default.getUsers(role, skip, itemsPerPage, idCompany, idDepartment);
+                const users = yield user_service_1.default.getUsers(role, skip, itemsPerPage, idCompany, idDepartment, true);
                 return res.status(200).json(users);
             }
             catch (error) {

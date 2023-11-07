@@ -25,7 +25,7 @@ class UserService {
             try {
                 const session = yield mongoose_1.default.startSession();
                 session.startTransaction();
-                const { service, email } = userData;
+                const { service, email, idCompany, idDepartment } = userData;
                 const saltRounds = 8;
                 const hashedPassword = yield bcrypt_1.default.hash(userData.password, saltRounds);
                 userData.password = hashedPassword;
@@ -35,9 +35,11 @@ class UserService {
                 if (savedUser) {
                     yield email_service_1.default.sendEmail(email, service, savedUser.id, enum_1.Actions.CREATE);
                 }
+                const itemsPerPage = 10;
+                const totalPages = yield UserService.userCountService(idCompany, null, userData.role[0], itemsPerPage, false);
                 yield session.commitTransaction();
                 session.endSession();
-                return savedUser;
+                return { savedUser, totalPages };
             }
             catch (error) {
                 if (error instanceof handleError_1.default) {
@@ -47,22 +49,16 @@ class UserService {
             }
         });
     }
-    static getUsers(role, skip, itemsPerPage, idCompany, idDepartment) {
+    static getUsers(role, skip, itemsPerPage, idCompany, idDepartment, throwException) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = { role: { $in: [role] }, deleted: false };
-                if (idCompany) {
-                    query["idCompany"] = idCompany;
-                }
-                if (idDepartment) {
-                    query["idDepartment"] = idDepartment;
-                }
+                const userService = new UserService();
+                const query = userService.createQuery(idCompany, idDepartment, role);
                 const users = yield users_1.default.find(query).skip(skip).limit(itemsPerPage);
-                if (users.length == 0) {
+                if (users.length == 0 && throwException) {
                     throw new handleError_1.default("Não há registros para essa busca", 404);
                 }
-                const totalUsers = yield users_1.default.find(query).count();
-                const totalPages = Math.ceil(totalUsers / itemsPerPage);
+                const totalPages = yield this.userCountService(idCompany, idDepartment, role, itemsPerPage, throwException);
                 return { users, totalPages };
             }
             catch (error) {
@@ -72,6 +68,32 @@ class UserService {
                 throw new Error(error.message);
             }
         });
+    }
+    static userCountService(idCompany, idDepartment, role, itemsPerPage, throwException) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userService = new UserService();
+                const query = userService.createQuery(idCompany, idDepartment, role);
+                let totalUsers = yield users_1.default.find(query).count();
+                if (!throwException)
+                    totalUsers += 1;
+                const totalPages = Math.ceil(totalUsers / itemsPerPage);
+                return totalPages;
+            }
+            catch (error) {
+                throw new Error(error.message);
+            }
+        });
+    }
+    createQuery(idCompany, idDepartment, role) {
+        const query = { role: { $in: [role] }, deleted: false };
+        if (idCompany) {
+            query["idCompany"] = idCompany;
+        }
+        if (idDepartment) {
+            query["idDepartment"] = idDepartment;
+        }
+        return query;
     }
     static validateUsernameService(username, id) {
         return __awaiter(this, void 0, void 0, function* () {

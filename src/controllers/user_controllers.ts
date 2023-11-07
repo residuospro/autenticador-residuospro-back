@@ -25,7 +25,7 @@ class UserController {
 
       const password = generator.generateRandomPassword();
 
-      const createUser = await UserService.createUser(
+      const { savedUser, totalPages } = await UserService.createUser(
         {
           name,
           idDepartment,
@@ -41,7 +41,8 @@ class UserController {
       );
 
       return res.status(201).json({
-        createUser,
+        savedUser,
+        totalPages,
         message: {
           title: Messages.TITLE_REGISTER,
           subTitle: Messages.SUBTITLE_REGISTER,
@@ -76,7 +77,8 @@ class UserController {
         skip,
         itemsPerPage,
         idCompany,
-        idDepartment
+        idDepartment,
+        true
       );
 
       return res.status(200).json(users);

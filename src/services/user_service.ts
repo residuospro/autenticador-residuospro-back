@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import User from "../models/users";
 import { IUser, UserDataService } from "../utils/interfaces";
-import { Actions, Permissions } from "../utils/enum";
+import { Actions } from "../utils/enum";
 import HandleError from "../utils/errors/handleError";
 import PermissionMapper from "../utils/errors/mapPermission";
 import EmailService from "./email_service";
@@ -13,7 +13,7 @@ class UserService {
       const session = await mongoose.startSession();
       session.startTransaction();
 
-      const { service, email } = userData;
+      const { service, email, idCompany, idDepartment } = userData;
 
       const saltRounds = 8;
       const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
@@ -36,11 +36,20 @@ class UserService {
           Actions.CREATE
         );
       }
+      const itemsPerPage = 10;
+
+      const totalPages = await UserService.userCountService(
+        idCompany,
+        null,
+        userData.role[0],
+        itemsPerPage,
+        false
+      );
 
       await session.commitTransaction();
       session.endSession();
 
-      return savedUser;
+      return { savedUser, totalPages };
     } catch (error: any) {
       if (error instanceof HandleError) {
         throw error;
@@ -55,28 +64,27 @@ class UserService {
     skip: number,
     itemsPerPage: number,
     idCompany: string,
-    idDepartment: string
+    idDepartment: string,
+    throwException: boolean
   ) {
     try {
-      const query: any = { role: { $in: [role] }, deleted: false };
+      const userService = new UserService();
 
-      if (idCompany) {
-        query["idCompany"] = idCompany;
-      }
-
-      if (idDepartment) {
-        query["idDepartment"] = idDepartment;
-      }
+      const query = userService.createQuery(idCompany, idDepartment, role);
 
       const users = await User.find(query).skip(skip).limit(itemsPerPage);
 
-      if (users.length == 0) {
+      if (users.length == 0 && throwException) {
         throw new HandleError("Não há registros para essa busca", 404);
       }
 
-      const totalUsers = await User.find(query).count();
-
-      const totalPages = Math.ceil(totalUsers / itemsPerPage);
+      const totalPages = await this.userCountService(
+        idCompany,
+        idDepartment,
+        role,
+        itemsPerPage,
+        throwException
+      );
 
       return { users, totalPages };
     } catch (error: any) {
@@ -86,6 +94,44 @@ class UserService {
 
       throw new Error(error.message);
     }
+  }
+
+  static async userCountService(
+    idCompany: string,
+    idDepartment: string,
+    role: string,
+    itemsPerPage: number,
+    throwException: boolean
+  ) {
+    try {
+      const userService = new UserService();
+
+      const query = userService.createQuery(idCompany, idDepartment, role);
+
+      let totalUsers = await User.find(query).count();
+
+      if (!throwException) totalUsers += 1;
+
+      const totalPages = Math.ceil(totalUsers / itemsPerPage);
+
+      return totalPages;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  private createQuery(idCompany: string, idDepartment: string, role: string) {
+    const query: any = { role: { $in: [role] }, deleted: false };
+
+    if (idCompany) {
+      query["idCompany"] = idCompany;
+    }
+
+    if (idDepartment) {
+      query["idDepartment"] = idDepartment;
+    }
+
+    return query;
   }
 
   static async validateUsernameService(

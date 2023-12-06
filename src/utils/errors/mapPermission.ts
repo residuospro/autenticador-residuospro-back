@@ -6,6 +6,7 @@ class PermissionMapper {
     [Permissions.MANAGER]: [Permissions.COLLABORATOR],
     [Permissions.SUPPORT]: [Permissions.ADMIN],
     [Permissions.COLLABORATOR]: [Permissions.COLLABORATOR],
+    [Permissions.MASTER]: [Permissions.SUPPORT],
   };
 
   static getCreatablePermission(userPermission: string): Permissions[] {

@@ -26,15 +26,10 @@ class UserService {
         ...userData,
       });
 
-      const savedUser = await newUser.save({ session });
+      const items = await newUser.save({ session });
 
-      if (savedUser) {
-        await EmailService.sendEmail(
-          email,
-          service,
-          savedUser.id,
-          Actions.CREATE
-        );
+      if (items) {
+        await EmailService.sendEmail(email, service, items.id, Actions.CREATE);
       }
       const itemsPerPage = 10;
 
@@ -49,7 +44,7 @@ class UserService {
       await session.commitTransaction();
       session.endSession();
 
-      return { savedUser, totalPages };
+      return { items, totalPages };
     } catch (error: any) {
       if (error instanceof HandleError) {
         throw error;
@@ -338,10 +333,12 @@ class UserService {
 
   static async deleteUserAfterDepartmentService(id: string) {
     try {
-      await User.updateMany(
+      const user = await User.updateMany(
         { idDepartment: id },
         { deleted: true, deletedAt: new Date() }
       );
+
+      console.log(user);
     } catch (error) {
       return error;
     }

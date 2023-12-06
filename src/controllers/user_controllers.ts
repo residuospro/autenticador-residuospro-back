@@ -3,7 +3,7 @@ import UserService from "../services/user_service";
 import { IUser } from "../utils/interfaces";
 import HandleError from "../utils/errors/handleError";
 import PasswordGenerator from "../utils/passwordGenerator";
-import { Messages, Service } from "../utils/enum";
+import { Messages, Permissions, Service } from "../utils/enum";
 
 class UserController {
   async createUser(req: Request, res: Response) {
@@ -19,13 +19,19 @@ class UserController {
         service,
       } = req.body;
 
-      const user = req.user;
+      let user: string;
+
+      if (req.user) {
+        user = req.user.role[0];
+      } else {
+        user = Permissions.MASTER;
+      }
 
       const generator = new PasswordGenerator();
 
       const password = generator.generateRandomPassword();
 
-      const { savedUser, totalPages } = await UserService.createUser(
+      const { items, totalPages } = await UserService.createUser(
         {
           name,
           idDepartment,
@@ -37,17 +43,21 @@ class UserController {
           email,
           service,
         },
-        user.role[0]
+        user
       );
 
-      return res.status(201).json({
-        savedUser,
+      const message = {
+        title: Messages.TITLE_REGISTER,
+        subTitle: Messages.SUBTITLE_REGISTER,
+      };
+
+      const response = res.status(201).json({
+        items,
         totalPages,
-        message: {
-          title: Messages.TITLE_REGISTER,
-          subTitle: Messages.SUBTITLE_REGISTER,
-        },
+        message,
       });
+
+      return { items, totalPages, response };
     } catch (error: any) {
       if (error instanceof HandleError) {
         return res.status(error.statusCode).send({

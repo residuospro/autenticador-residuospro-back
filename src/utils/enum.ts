@@ -21,6 +21,7 @@ export enum Routes {
 }
 
 export enum Permissions {
+  MASTER = "MASTER",
   SUPPORT = "SUPPORT",
   ADMIN = "ADMIN",
   MANAGER = "MANAGER",
@@ -67,4 +68,8 @@ export enum Messages {
 
   TITLE_EXISTING_USER = "Username inválido",
   SUBTITLE_EXISTING_USER = "O nome de usuário fornecido já existe em nosso banco",
+}
+
+export enum Event {
+  USER_CREATED = "user_created",
 }

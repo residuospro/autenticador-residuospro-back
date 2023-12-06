@@ -6,3 +6,9 @@ export const typePermissions = [
   Permissions.MANAGER,
   Permissions.SUPPORT,
 ];
+
+export const UserPermissions = [
+  Permissions.ADMIN,
+  Permissions.MANAGER,
+  Permissions.SUPPORT,
+];
